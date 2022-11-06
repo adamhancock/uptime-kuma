@@ -1,18 +1,18 @@
 // Update with your config settings.
 
-const dbType = process.env.DB_TYPE || 'sqlite3';
-const dbHost = process.env.DB_HOST;
-const dbName = process.env.DB_NAME;
-const dbUser = process.env.DB_USER;
-const dbPass = process.env.DB_PASS;
-    
-let database;
+const dbType = process.env.DB_TYPE || 'sqlite3'
+const dbHost = process.env.DB_HOST
+const dbName = process.env.DB_NAME
+const dbUser = process.env.DB_USER
+const dbPass = process.env.DB_PASS
+
+let database
 
 switch (dbType) {
     case 'sqlite3':
-        const dialect = require("knex/lib/dialects/sqlite3/index.js");
-        dialect.prototype._driver = () => require("@louislam/sqlite3");
-        
+        const dialect = require('knex/lib/dialects/sqlite3/index.js')
+        dialect.prototype._driver = () => require('@louislam/sqlite3')
+
         database = {
             client: dialect,
             connection: {
@@ -28,34 +28,33 @@ switch (dbType) {
                 acquireTimeoutMillis: 120 * 1000,
             },
             migrations: {
-                tableName: 'knex_migrations'
-            }
-        };
-        break;
-    
+                tableName: 'knex_migrations',
+            },
+        }
+        break
+
     case 'mysql':
-        
+        console.log('Using MySQL host: ' + dbHost)
         database = {
-            client: "mysql",
+            client: 'mysql',
             connection: {
                 host: dbHost,
                 user: dbUser,
                 database: dbName,
                 password: dbPass,
-            }
-        };
-        break;
+            },
+        }
+        break
 }
 
 function setPath(path) {
-    if (dbType !== 'sqlite')
-        return;
-    
-    database.connection.filename = path;
+    if (dbType !== 'sqlite') return
+
+    database.connection.filename = path
 }
 
 function getDialect() {
-    return dbType;
+    return dbType
 }
 
 module.exports = {
@@ -63,4 +62,4 @@ module.exports = {
     production: database,
     setPath: setPath,
     getDialect: getDialect,
-};
+}

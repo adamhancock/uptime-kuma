@@ -8,12 +8,12 @@ debug(args)
 if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = 'production'
 } else {
-    console.log('NODE_ENV: ' + process.env.NODE_ENV)
+    console.log('Loading dotenv')
     require('dotenv').config()
 }
 
 console.log('Node Env: ' + process.env.NODE_ENV)
-
+console.log('DB Type:', process.env.DB_TYPE)
 console.log('Importing Node libraries')
 const fs = require('fs')
 const http = require('http')
@@ -249,6 +249,7 @@ exports.entryPage = 'dashboard'
     app.get('/metrics', basicAuth, prometheusAPIMetrics())
 
     app.use('/', express.static('dist'))
+    app.use('/', express.static('public'))
 
     // ./data/upload
     app.use('/upload', express.static(Database.uploadDir))
