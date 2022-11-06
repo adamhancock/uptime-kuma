@@ -6,6 +6,8 @@ on:
       - 'server/*'
       - 'src/*'
       - 'migrations/*'
+      - 'Dockerfile'
+      - '.github/workflows/build-image.yml'
 
 jobs:
   build:
@@ -24,5 +26,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the Docker image
         run: |
-          docker build api -t ${{ env.registry }}/${{ github.repository }}/${{ env.imageName }}
+          docker build . -t ${{ env.registry }}/${{ github.repository }}/${{ env.imageName }}
           docker push ${{ env.registry }}/${{ github.repository }}/${{ env.imageName }}
