@@ -18,7 +18,7 @@ console.log('Importing Node libraries')
 const fs = require('fs')
 const http = require('http')
 const https = require('https')
-
+const monitorqueue = require('./modules/monitorqueue')
 console.log('Importing 3rd-party libraries')
 debug('Importing express')
 const express = require('express')
@@ -35,6 +35,7 @@ const prometheusAPIMetrics = require('prometheus-api-metrics')
 debug('Importing compare-versions')
 const compareVersions = require('compare-versions')
 const { passwordStrength } = require('check-password-strength')
+const MonitorQueue = require('./modules/monitorqueue')
 
 debug('Importing 2FA Modules')
 const notp = require('notp')
@@ -126,6 +127,10 @@ console.log('Creating express and socket.io instance')
 const app = express()
 
 let server
+;(async function () {
+    let monitorQueue = new monitorqueue()
+    monitorQueue.createQueue()
+})()
 
 if (sslKey && sslCert) {
     console.log('Server Type: HTTPS')
@@ -1455,8 +1460,21 @@ exports.entryPage = 'dashboard'
         } else {
             console.log(`Listening on ${port}`)
         }
-        startMonitors()
-        checkVersion.startInterval()
+        if (!process.env.SCHEDULER) {
+            console.log('Starting monitors')
+            startMonitors()
+        } else {
+            console.log(
+                'External scheduler mode enabled, not starting monitors'
+            )
+            const monitorqueue = new MonitorQueue()
+            monitorqueue.start()
+            monitorqueue.on('startmonitor', async (monitorID) => {
+                await startMonitor(1, monitorID)
+            })
+        }
+        // Don't need this in my fork. I use a different way to start the monitors
+        /// checkVersion.startInterval()
 
         if (testMode) {
             startUnitTest()
@@ -1611,6 +1629,7 @@ async function startMonitors() {
 
     for (let monitor of list) {
         monitor.start(io)
+
         // Give some delays, so all monitors won't make request at the same moment when just start the server.
         await sleep(getRandomInt(300, 1000))
     }

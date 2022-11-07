@@ -55,6 +55,7 @@
         "ncu-patch": "ncu -u -t patch"
     },
     "dependencies": {
+        "@azure/storage-queue": "^12.7.0",
         "@fortawesome/fontawesome-svg-core": "~1.2.36",
         "@fortawesome/free-regular-svg-icons": "~5.15.4",
         "@fortawesome/free-solid-svg-icons": "~5.15.4",
@@ -66,6 +67,7 @@
         "bcryptjs": "~2.4.3",
         "bootstrap": "5.1.3",
         "bree": "~7.1.0",
+        "cabin": "^9.1.2",
         "chardet": "^1.3.0",
         "chart.js": "~3.9.1",
         "chartjs-adapter-dayjs": "~1.0.0",
